@@ -1,8 +1,8 @@
 const fs = require("fs");
-
+var shell = require('shelljs');
 
 function createServer(serverRequirements) {
-    console.log(serverRequirements);
+    
     serverRequirements = {
         projectName: 'Alexandria',
         port: '8080',
@@ -13,39 +13,16 @@ function createServer(serverRequirements) {
         postMethods: ['add-book delete-book']
     }
 
-    createPackageJson(serverRequirements)
+    // createPackageJson(serverRequirements)
 }
 
 function createPackageJson(serverRequirements) {
-    let packageJson = dependeciesPackage(serverRequirements)
+    shell.exec('cd server/template && git init && npm init -y')
+    shell.exec('cd server/template && npm install express')
 
-    fs.writeFile("server/template/package.json", packageJson, (err) => {
-        if (err) console.log(err);
-    })
-}
-
-function dependeciesPackage(serverRequirements) {
-    let packageJson =     
-`{
-    "name": "${serverRequirements.projectName}",
-    "version": "1.0.0",
-    "description": "",
-    "main": "app.js",
-    "scripts": {
-        "start": "node server/app.js"
-    },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
-	"dependencies": {
-		"body-parser": "^1.19.0",
-		"cors": "^2.8.5",
-		"express": "^4.17.1",
-		"mongoose": "^5.9.11"
-	}
-}`
-
-    return packageJson
+    if (serverRequirements.bodyParser) { shell.exec('cd server/template && npm install body-parser')  }
+    if (serverRequirements.cors) { shell.exec('cd server/template && npm install cors')  }
+    if (serverRequirements.mongoose) { shell.exec('cd server/template && npm install mongoose')  }
 }
 
 
