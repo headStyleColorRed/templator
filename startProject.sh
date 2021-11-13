@@ -1,1 +1,2 @@
-rm -rf sever/template && node server/app.js
+rm -rf sever/template/
+node server/app.js

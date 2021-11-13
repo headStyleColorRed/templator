@@ -38,6 +38,8 @@ let getMethod = `app.get("/", (req, res) => {
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # #  C R E A T I O N  # # # # # # # # # # # # # # # # # # # # # # # # # # # # // 
 
+fuc
+
 function createAppFile(serverRequirements) {
   // Create directory
   fs.mkdirSync("server/template/server", { recursive: true }, () => { })
@@ -80,7 +82,7 @@ function createAppFile(serverRequirements) {
   addSpaces()
 
   // Add dependencies
-  createPackageJson()
+  createPackageJson(serverRequirements)
 }
 
 function createPackageJson(serverRequirements) {
