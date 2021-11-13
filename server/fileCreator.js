@@ -1,6 +1,8 @@
 const fs = require("fs");
-const appFile = "template/server/app.js"
+const shell = require('shelljs');
+const appFile = "server/template/server/app.js"
 
+// # # # # # # # # # # # # # # # # # # # # # # # # # #  T E M P L A T E S  # # # # # # # # # # # # # # # # # # # # # # # # # # # # // 
 
 // Imports
 const bodyParserModule = `const bodyParser = require("body-parser")\n`
@@ -34,9 +36,11 @@ let getMethod = `app.get("/", (req, res) => {
 
 
 
+// # # # # # # # # # # # # # # # # # # # # # # # # # #  C R E A T I O N  # # # # # # # # # # # # # # # # # # # # # # # # # # # # // 
+
 function createAppFile(serverRequirements) {
   // Create directory
-  fs.mkdirSync("template/server", { recursive: true }, () => { })
+  fs.mkdirSync("server/template/server", { recursive: true }, () => { })
 
   // Write top file imports
   const standardModules = `const express = require("express") \nconst app = express(); \nconst port = ${serverRequirements.port};\n`
@@ -74,7 +78,22 @@ function createAppFile(serverRequirements) {
   addSpaces()
   fs.appendFileSync(appFile, getMethod)
   addSpaces()
+
+  // Add dependencies
+  createPackageJson()
 }
+
+function createPackageJson(serverRequirements) {
+  shell.exec('cd server/template && git init && npm init -y')
+  shell.exec('cd server/template && npm install express')
+
+  if (serverRequirements.bodyParser) { shell.exec('cd server/template && npm install body-parser')  }
+  if (serverRequirements.cors) { shell.exec('cd server/template && npm install cors')  }
+  if (serverRequirements.mongoose) { shell.exec('cd server/template && npm install mongoose')  }
+}
+
+
+// # # # # # # # # # # # # # # # # # # # # # # # # # #  U T I L S  # # # # # # # # # # # # # # # # # # # # # # # # # # # # // 
 
 function hasMiddlewares(serverRequirements) {
   return serverRequirements.bodyParser || serverRequirements.cors
