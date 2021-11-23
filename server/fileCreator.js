@@ -124,7 +124,7 @@ function createAppFile(serverRequirements) {
 }
 
 function createPackageJson(serverRequirements) {
-    shell.exec('cd server/template && git init && npm init -y > /dev/null')
+    shell.exec('cd server/template && git init > /dev/null && npm init -y &> /dev/null')
     shell.exec('cd server/template && npm install express > /dev/null')
 
     if (serverRequirements.bodyParser) { shell.exec('cd server/template && npm install body-parser > /dev/null') }

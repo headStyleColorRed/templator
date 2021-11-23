@@ -42,7 +42,7 @@ const fileCreator = require("./fileCreator.js");
       {
         type: 'list',
         name: 'routes',
-        message: 'Enter routes separated with a ,',
+        message: 'Enter routes separated with a comma.',
         initial: '',
         separator: ','
       }
