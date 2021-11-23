@@ -38,6 +38,13 @@ const fileCreator = require("./fileCreator.js");
         initial: false,
         active: 'yes',
         inactive: 'no'
+      },
+      {
+        type: 'list',
+        name: 'routes',
+        message: 'Enter routes separated with a ,',
+        initial: '',
+        separator: ','
       }
   ]);
 
@@ -50,7 +57,8 @@ const fileCreator = require("./fileCreator.js");
     dotenv: response.options.includes("dotenv"),
     mongoose: response.options.includes("mongoose"),
     validation: response.options.includes("validation"),
-    docker: response.docker
+    routes: response.routes,
+    docker: response.docker,
   }
   console.log(serverRequirements);
 

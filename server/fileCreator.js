@@ -4,6 +4,7 @@ const appFile = "server/template/server/app.js"
 const validationStaticFile = require("./files/validationFile.js")
 const mongoDBStaticFile = require("./files/mongoDBFile.js")
 const dockerStaticFile = require("./files/dockerStaticFile.js")
+const requestStaticFile = require("./files/requestStaticfile.js")
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # #  T E M P L A T E S  # # # # # # # # # # # # # # # # # # # # # # # # # # # # // 
 
@@ -74,6 +75,12 @@ function createAppFile(serverRequirements) {
         addSpaces()
     }
 
+    // Routes
+    if (serverRequirements.routes.length > 0) {
+        handleRouteCreation(serverRequirements)
+        addSpaces()
+    }
+
     // DataBaseConection
     if (serverRequirements.mongoose) {
         fs.appendFileSync(appFile, "// Modules\n")
@@ -89,7 +96,7 @@ function createAppFile(serverRequirements) {
     addSpaces()
 
 
-    
+
     // Methods
     fs.appendFileSync(appFile, "// ++++++++++++++++ HTTP METHODS +++++++++++++++++++ //")
     addSpaces()
@@ -165,6 +172,22 @@ function handleDockerCreation(serverRequirements) {
     fs.writeFileSync("server/template/fireUpServer.sh", fireUpServer, (err) => { if (err) console.log(err); })
 }
 
+function handleRouteCreation(serverRequirements) {
+    // Create folder
+    fs.mkdirSync("server/template/server/requests", { recursive: true }, () => { })
+
+    // Iterate files
+    serverRequirements.routes.forEach(route => {
+        // Add route to app.js
+        let newRoute = `app.use("/${route}", require("./requests/${route}Requests"))\n`
+        fs.appendFileSync(appFile, newRoute)
+        
+        // Create route file
+        let newRequest = requestStaticFile.createRequest(route, serverRequirements.mongoose, serverRequirements.validation)
+        fs.writeFileSync(`server/template/server/requests/${route}Requests.js`, newRequest, (err) => { if (err) console.log(err); })
+    });
+}
+
 // # # # # # # # # # # # # # # # # # # # # # # # # # #  U T I L S  # # # # # # # # # # # # # # # # # # # # # # # # # # # # // 
 
 function hasMiddlewares(serverRequirements) {
@@ -179,6 +202,3 @@ function addSpaces() {
 module.exports = {
     createAppFile,
 }
-
-let serverRequirements = { mongoose: true, port: 8888}
-handleDockerCreation(serverRequirements)
