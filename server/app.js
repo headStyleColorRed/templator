@@ -27,6 +27,7 @@ const fileCreator = require("./fileCreator.js");
         { title: 'BodyParser', value: 'bodyParser', selected: true },
         { title: 'Dot files', value: 'dotenv' },
         { title: 'Mongoose', value: 'mongoose' },
+        { title: 'Validation', value: 'validation' },
       ],
       hint: '- Space to select. Return to submit'
     }
@@ -40,6 +41,7 @@ const fileCreator = require("./fileCreator.js");
     bodyParser: response.options.includes("bodyParser"),
     dotenv: response.options.includes("dotenv"),
     mongoose: response.options.includes("mongoose"),
+    validation: response.options.includes("validation"),
     getMethods: ['get-books'],
     postMethods: ['add-book delete-book']
   }
