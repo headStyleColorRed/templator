@@ -60,7 +60,6 @@ const fileCreator = require("./fileCreator.js");
     routes: response.routes,
     docker: response.docker,
   }
-  console.log(serverRequirements);
 
   // Create project accordingly
   fileCreator.createAppFile(serverRequirements)

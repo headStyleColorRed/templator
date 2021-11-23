@@ -124,13 +124,13 @@ function createAppFile(serverRequirements) {
 }
 
 function createPackageJson(serverRequirements) {
-    shell.exec('cd server/template && git init && npm init -y')
-    shell.exec('cd server/template && npm install express')
+    shell.exec('cd server/template && git init && npm init -y > /dev/null')
+    shell.exec('cd server/template && npm install express > /dev/null')
 
-    if (serverRequirements.bodyParser) { shell.exec('cd server/template && npm install body-parser') }
-    if (serverRequirements.cors) { shell.exec('cd server/template && npm install cors') }
-    if (serverRequirements.mongoose) { shell.exec('cd server/template && npm install mongoose') }
-    if (serverRequirements.dotenv) { shell.exec('cd server/template && npm install dotenv') }
+    if (serverRequirements.bodyParser) { shell.exec('cd server/template && npm install body-parser > /dev/null') }
+    if (serverRequirements.cors) { shell.exec('cd server/template && npm install cors > /dev/null') }
+    if (serverRequirements.mongoose) { shell.exec('cd server/template && npm install mongoose > /dev/null') }
+    if (serverRequirements.dotenv) { shell.exec('cd server/template && npm install dotenv > /dev/null') }
 }
 
 function createGitIgnoreFile() {
@@ -209,7 +209,6 @@ function addCustomScriptstoPackage(serverRequirements) {
     if (serverRequirements.mongoose && serverRequirements.docker) {
         package.scripts["docker"] = "docker container run -d --rm -p 27017:27017 mongo && NODE_ENV=development nodemon server/app.js"
     }
-    console.log(package);
     fs.writeFileSync(`server/template/package.json`, JSON.stringify(package), (err) => { if (err) console.log(err); })
 }
 
