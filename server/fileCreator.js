@@ -5,6 +5,7 @@ const validationStaticFile = require("./files/validationFile.js")
 const mongoDBStaticFile = require("./files/mongoDBFile.js")
 const dockerStaticFile = require("./files/dockerStaticFile.js")
 const requestStaticFile = require("./files/requestStaticfile.js")
+const packageJson = require("./template/package.json")
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # #  T E M P L A T E S  # # # # # # # # # # # # # # # # # # # # # # # # # # # # // 
 
@@ -199,6 +200,19 @@ function addSpaces() {
     fs.appendFileSync(appFile, spaces)
 }
 
+function addCustomScriptstoPackage(serverRequirements) {
+    let package = packageJson
+    package.scripts["start"] = "NODE_ENV=production node server/app.js"
+    package.scripts["dev"] = "NODE_ENV=development nodemon server/app.js"
+    if (serverRequirements.mongoose && serverRequirements.docker) {
+        package.scripts["docker"] = "docker container run -d --rm -p 27017:27017 mongo && NODE_ENV=development nodemon server/app.js"
+    }
+    console.log(package);
+    fs.writeFileSync(`server/template/package.json`, JSON.stringify(package), (err) => { if (err) console.log(err); })
+}
+
 module.exports = {
     createAppFile,
 }
+
+addCustomScriptstoPackage({mongoose: true, docker: true})
