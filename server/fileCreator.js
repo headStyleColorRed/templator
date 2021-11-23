@@ -5,12 +5,10 @@ const validationStaticFile = require("./files/validationFile.js")
 const mongoDBStaticFile = require("./files/mongoDBFile.js")
 const dockerStaticFile = require("./files/dockerStaticFile.js")
 const requestStaticFile = require("./files/requestStaticfile.js")
-const packageJson = require("./template/package.json")
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # #  T E M P L A T E S  # # # # # # # # # # # # # # # # # # # # # # # # # # # # // 
 
 // Imports
-const bodyParserModule = `const bodyParser = require("body-parser")\n`
 const corsModule = `const Cors = require("cors")\n`
 const dotenvModule = `require('dotenv').config()\n`
 const mongooseModule = `const mongoose = require("mongoose")\n`
@@ -62,7 +60,6 @@ function createAppFile(serverRequirements) {
     // Write top file imports
     const standardModules = `const express = require("express") \nconst app = express(); \nconst port = ${serverRequirements.port};\n`
     fs.writeFileSync(appFile, standardModules, (err) => { if (err) console.log(err); })
-    if (serverRequirements.bodyParser) { fs.appendFileSync(appFile, bodyParserModule) }
     if (serverRequirements.cors) { fs.appendFileSync(appFile, corsModule) }
     if (serverRequirements.mongoose) { fs.appendFileSync(appFile, mongooseModule) }
     if (serverRequirements.dotenv) { fs.appendFileSync(appFile, dotenvModule) }
@@ -121,6 +118,9 @@ function createAppFile(serverRequirements) {
 
     // Handle docker
     if (serverRequirements.docker) { handleDockerCreation(serverRequirements) }
+
+    // Change package.json
+    addCustomScriptstoPackage(serverRequirements)
 }
 
 function createPackageJson(serverRequirements) {
@@ -182,7 +182,7 @@ function handleRouteCreation(serverRequirements) {
         // Add route to app.js
         let newRoute = `app.use("/${route}", require("./requests/${route}Requests"))\n`
         fs.appendFileSync(appFile, newRoute)
-        
+
         // Create route file
         let newRequest = requestStaticFile.createRequest(route, serverRequirements.mongoose, serverRequirements.validation)
         fs.writeFileSync(`server/template/server/requests/${route}Requests.js`, newRequest, (err) => { if (err) console.log(err); })
@@ -201,7 +201,9 @@ function addSpaces() {
 }
 
 function addCustomScriptstoPackage(serverRequirements) {
+    const packageJson = require("./template/package.json")
     let package = packageJson
+    package.name = serverRequirements.projectName
     package.scripts["start"] = "NODE_ENV=production node server/app.js"
     package.scripts["dev"] = "NODE_ENV=development nodemon server/app.js"
     if (serverRequirements.mongoose && serverRequirements.docker) {
@@ -214,5 +216,3 @@ function addCustomScriptstoPackage(serverRequirements) {
 module.exports = {
     createAppFile,
 }
-
-addCustomScriptstoPackage({mongoose: true, docker: true})
