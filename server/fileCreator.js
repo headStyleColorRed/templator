@@ -2,6 +2,7 @@ const fs = require("fs");
 const shell = require('shelljs');
 const appFile = "server/template/server/app.js"
 const validationStaticFile = require("./files/validationFile.js")
+const mongoDBStaticFile = require("./files/mongoDBFile.js")
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # #  T E M P L A T E S  # # # # # # # # # # # # # # # # # # # # # # # # # # # # // 
 
@@ -33,8 +34,19 @@ let timeOut = setInterval(() => {
 
 // Standard get method
 let getMethod = `app.get("/", (req, res) => {
-  res.send("Server is up and running! :D")
-})`
+    res.send("Server is up and running! :D")
+  })`
+
+let usersMethods = `app.get("/getUsers", async (req, res) => {
+	const users = await User.find();
+	res.json(users);
+});
+
+app.get("/deleteUsers", async (req, res) => {
+	const users = await User.deleteMany();
+	res.json("Users deleted");
+});
+`
 
 
 
@@ -63,6 +75,9 @@ function createAppFile(serverRequirements) {
 
     // DataBaseConection
     if (serverRequirements.mongoose) {
+        fs.appendFileSync(appFile, "// Modules\n")
+        fs.appendFileSync(appFile, "const User = require(\"./mongoDB/userModel.js\")")
+        addSpaces()
         fs.appendFileSync(appFile, mongooseConection)
         addSpaces()
     }
@@ -72,11 +87,19 @@ function createAppFile(serverRequirements) {
     fs.appendFileSync(appFile, `app.listen(${serverRequirements.port}, () => console.log("Listening on port " + port))`)
     addSpaces()
 
+
+    
     // Methods
     fs.appendFileSync(appFile, "// ++++++++++++++++ HTTP METHODS +++++++++++++++++++ //")
     addSpaces()
+
     fs.appendFileSync(appFile, getMethod)
     addSpaces()
+
+    if (serverRequirements.mongoose) { fs.appendFileSync(appFile, usersMethods) }
+    addSpaces()
+
+
 
     // Add dependencies
     createPackageJson(serverRequirements)
@@ -85,6 +108,7 @@ function createAppFile(serverRequirements) {
     createGitIgnoreFile()
     if (serverRequirements.dotenv) { createDotEnvFile() }
     if (serverRequirements.validation) { createValidationFile() }
+    if (serverRequirements.mongoose) { createMongoDBModelFile() }
 }
 
 function createPackageJson(serverRequirements) {
@@ -114,7 +138,13 @@ function createValidationFile() {
     let validationFile = "server/template/server/tools/validation.js"
     fs.mkdirSync("server/template/server/tools", { recursive: true }, () => { })
     fs.writeFileSync(validationFile, validation, (err) => { if (err) console.log(err); })
+}
 
+function createMongoDBModelFile() {
+    let mongooseModel = mongoDBStaticFile.mongoDBFile
+    let mongooseModelFile = "server/template/server/mongoDB/userModel.js"
+    fs.mkdirSync("server/template/server/mongoDB", { recursive: true }, () => { })
+    fs.writeFileSync(mongooseModelFile, mongooseModel, (err) => { if (err) console.log(err); })
 }
 
 
@@ -132,6 +162,3 @@ function addSpaces() {
 module.exports = {
     createAppFile,
 }
-
-
-createValidationFile()
