@@ -30,7 +30,15 @@ const fileCreator = require("./fileCreator.js");
         { title: 'Validation', value: 'validation' },
       ],
       hint: '- Space to select. Return to submit'
-    }
+    },
+    {
+        type: 'toggle',
+        name: 'docker',
+        message: 'Do you want to dockerize this app?',
+        initial: false,
+        active: 'yes',
+        inactive: 'no'
+      }
   ]);
 
   // Create user requirements object
@@ -42,9 +50,9 @@ const fileCreator = require("./fileCreator.js");
     dotenv: response.options.includes("dotenv"),
     mongoose: response.options.includes("mongoose"),
     validation: response.options.includes("validation"),
-    getMethods: ['get-books'],
-    postMethods: ['add-book delete-book']
+    docker: response.docker
   }
+  console.log(serverRequirements);
 
   // Create project accordingly
   fileCreator.createAppFile(serverRequirements)

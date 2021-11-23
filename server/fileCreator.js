@@ -3,6 +3,7 @@ const shell = require('shelljs');
 const appFile = "server/template/server/app.js"
 const validationStaticFile = require("./files/validationFile.js")
 const mongoDBStaticFile = require("./files/mongoDBFile.js")
+const dockerStaticFile = require("./files/dockerStaticFile.js")
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # #  T E M P L A T E S  # # # # # # # # # # # # # # # # # # # # # # # # # # # # // 
 
@@ -109,6 +110,9 @@ function createAppFile(serverRequirements) {
     if (serverRequirements.dotenv) { createDotEnvFile() }
     if (serverRequirements.validation) { createValidationFile() }
     if (serverRequirements.mongoose) { createMongoDBModelFile() }
+
+    // Handle docker
+    if (serverRequirements.docker) { handleDockerCreation(serverRequirements) }
 }
 
 function createPackageJson(serverRequirements) {
@@ -147,6 +151,19 @@ function createMongoDBModelFile() {
     fs.writeFileSync(mongooseModelFile, mongooseModel, (err) => { if (err) console.log(err); })
 }
 
+function handleDockerCreation(serverRequirements) {
+    // Dockerfile
+    let dockerFile = dockerStaticFile.dockerFile
+    fs.writeFileSync("server/template/Dockerfile", dockerFile, (err) => { if (err) console.log(err); })
+
+    // Docker-compose
+    let dockerComposeFile = dockerStaticFile.dockerComposeFile(serverRequirements.port, serverRequirements.mongoose)
+    fs.writeFileSync("server/template/docker-compose.yml", dockerComposeFile, (err) => { if (err) console.log(err); })
+
+    // StartServerFile
+    let fireUpServer = "docker-compose up --build -d"
+    fs.writeFileSync("server/template/fireUpServer.sh", fireUpServer, (err) => { if (err) console.log(err); })
+}
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # #  U T I L S  # # # # # # # # # # # # # # # # # # # # # # # # # # # # // 
 
@@ -162,3 +179,6 @@ function addSpaces() {
 module.exports = {
     createAppFile,
 }
+
+let serverRequirements = { mongoose: true, port: 8888}
+handleDockerCreation(serverRequirements)
