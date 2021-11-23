@@ -25,7 +25,7 @@ const fileCreator = require("./fileCreator.js");
       choices: [
         { title: 'Cors', value: "cors", selected: true },
         { title: 'BodyParser', value: 'bodyParser', selected: true },
-        { title: 'Dot files', value: 'dotfiles' },
+        { title: 'Dot files', value: 'dotenv' },
         { title: 'Mongoose', value: 'mongoose' },
       ],
       hint: '- Space to select. Return to submit'
@@ -38,11 +38,11 @@ const fileCreator = require("./fileCreator.js");
     port: response.port,
     cors: response.options.includes("cors"),
     bodyParser: response.options.includes("bodyParser"),
+    dotenv: response.options.includes("dotenv"),
     mongoose: response.options.includes("mongoose"),
     getMethods: ['get-books'],
     postMethods: ['add-book delete-book']
   }
-  console.log(serverRequirements);
 
   // Create project accordingly
   fileCreator.createAppFile(serverRequirements)

@@ -1,12 +1,15 @@
 const fs = require("fs");
 const shell = require('shelljs');
 const appFile = "server/template/server/app.js"
+const dotEnvFile = "server/template/.env"
+const gitIgnoreFile = "server/template/.gitignore"
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # #  T E M P L A T E S  # # # # # # # # # # # # # # # # # # # # # # # # # # # # // 
 
 // Imports
 const bodyParserModule = `const bodyParser = require("body-parser")\n`
 const corsModule = `const Cors = require("cors")\n`
+const dotenvModule = `require('dotenv').config()\n`
 const mongooseModule = `const mongoose = require("mongoose")\n`
 
 
@@ -38,8 +41,6 @@ let getMethod = `app.get("/", (req, res) => {
 
 // # # # # # # # # # # # # # # # # # # # # # # # # # #  C R E A T I O N  # # # # # # # # # # # # # # # # # # # # # # # # # # # # // 
 
-fuc
-
 function createAppFile(serverRequirements) {
   // Create directory
   fs.mkdirSync("server/template/server", { recursive: true }, () => { })
@@ -50,11 +51,8 @@ function createAppFile(serverRequirements) {
   if (serverRequirements.bodyParser) { fs.appendFileSync(appFile, bodyParserModule) }
   if (serverRequirements.cors) { fs.appendFileSync(appFile, corsModule) }
   if (serverRequirements.mongoose) { fs.appendFileSync(appFile, mongooseModule) }
+  if (serverRequirements.dotenv) { fs.appendFileSync(appFile, dotenvModule) }
   addSpaces()
-
-  // Modules
-  // fs.appendFileSync(appFile, "// Modules\n")
-  // addSpaces()
 
   // Middelwares
   if (hasMiddlewares(serverRequirements)) {
@@ -83,6 +81,10 @@ function createAppFile(serverRequirements) {
 
   // Add dependencies
   createPackageJson(serverRequirements)
+
+  // Create files
+  createGitIgnoreFile()
+  if (serverRequirements.dotenv) { createDotEnvFile() }
 }
 
 function createPackageJson(serverRequirements) {
@@ -92,6 +94,17 @@ function createPackageJson(serverRequirements) {
   if (serverRequirements.bodyParser) { shell.exec('cd server/template && npm install body-parser')  }
   if (serverRequirements.cors) { shell.exec('cd server/template && npm install cors')  }
   if (serverRequirements.mongoose) { shell.exec('cd server/template && npm install mongoose')  }
+  if (serverRequirements.dotenv) { shell.exec('cd server/template && npm install dotenv')  }
+}
+
+function createGitIgnoreFile() {
+    let ignore = "node_modules/ \n.env"
+    fs.writeFileSync(gitIgnoreFile, ignore, (err) => { if (err) console.log(err); })
+}
+
+function createDotEnvFile() {
+    let secret = "SECRET="
+    fs.writeFileSync(dotEnvFile, secret, (err) => { if (err) console.log(err); })
 }
 
 
